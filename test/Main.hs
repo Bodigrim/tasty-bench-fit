@@ -20,7 +20,7 @@ main = defaultMain $ testGroup "All"
     c <- fit $ mkFitConfig (\x -> sum [1..x]) (1000, 100000)
     pure $ counterexample (show c) $ isLinear c
   , testProperty "nub is quadratic" $ ioProperty $ do
-    c <- fit $ mkFitConfig (\x -> nub [1..x]) (2000, 80000)
+    c <- fit $ mkFitConfig (\x -> nub [1..x]) (40000, 80000)
     pure $ counterexample (show c) $ isQuadratic c
   -- , expectFail $ testProperty "sort is linearithmic" $ ioProperty $ do
   --   c <- fit $ (mkFitConfig (\x -> Data.List.sort $ take x $
