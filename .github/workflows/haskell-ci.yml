@@ -197,12 +197,20 @@ jobs:
           echo "package tasty-bench-fit" >> cabal.project
           echo "    ghc-options: -Werror=missing-methods" >> cabal.project
           cat >> cabal.project <<EOF
+          constraints: tasty-bench-fit +debug
           allow-newer: regression-simple:base
+          allow-newer: numhask-space:semigroupoids
+          allow-newer: numhask-space:tdigest
 
           source-repository-package
             type:     git
             location: https://github.com/phadej/regression-simple.git
             tag:      c69eb135ba4031a6a06563f74539dab4fca59d37
+
+          source-repository-package
+            type:     git
+            location: https://github.com/kuribas/cubicbezier.git
+            tag:      45a4d56bce590c5e4d8dc5a30b2f3d4f44a31d28
           EOF
           $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(tasty-bench-fit)$/; }' >> cabal.project.local
           cat cabal.project
