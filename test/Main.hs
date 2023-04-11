@@ -19,9 +19,9 @@ main = defaultMain $ testGroup "All"
   , testProperty "sum is linear" $ ioProperty $ do
     c <- fit $ mkFitConfig (\x -> sum [1..x]) (1000, 100000)
     pure $ counterexample (show c) $ isLinear c
-  -- , expectFail $ testProperty "nub is quadratic" $ ioProperty $ do
-  --   c <- fit $ mkFitConfig (\x -> nub [1..x]) (200, 40000)
-  --   pure $ counterexample (show c) $ isQuadratic c
+  , testProperty "nub is quadratic" $ ioProperty $ do
+    c <- fit $ mkFitConfig (\x -> nub [1..x]) (200, 40000)
+    pure $ counterexample (show c) $ isQuadratic c
   -- , expectFail $ testProperty "sort is linearithmic" $ ioProperty $ do
   --   c <- fit $ (mkFitConfig (\x -> Data.List.sort $ take x $
   --     iterate (\n -> n * 6364136223846793005 + 1) (1 :: Int)) (1000, 100000)) { fitRelStDev = RelStDev 0.02 }
