@@ -133,16 +133,17 @@ bestOf cs xys = minimumBy (comparing weigh) cs
         -- Penalty for non-integer power. Just fine-tuned magic numbers.
         * (if b == b' then 1 else (if b <= 1 then 7 else 14))
         -- Penalty for high power of logarithm.
-        * (max 1 (c - 1))
+        * (max 1 c)
       where
         b' = fromIntegral (round b :: Int)
 
 stdevComplexity :: [Complexity] -> Complexity
-stdevComplexity cs = Complexity
-  { cmplMultiplier = stdev $ map cmplMultiplier cs
-  , cmplVarPower   = stdev $ map cmplVarPower   cs
-  , cmplLogPower   = stdev $ map cmplLogPower   cs
-  }
+stdevComplexity cs =
+  Complexity
+    { cmplMultiplier = stdev $ map cmplMultiplier cs
+    , cmplVarPower = stdev $ map cmplVarPower cs
+    , cmplLogPower = stdev $ map cmplLogPower cs
+    }
 
 -- | Guess time complexity from a list of pairs, where the first component
 -- is problem's size and the second component is problem's time.
@@ -205,7 +206,7 @@ tryToImprovePow (Complexity origA origB origC) xys =
     ceilingFit = guessComplexityForFixedPow (V3 origA (fromIntegral (ceiling origB :: Int)) origC) xys
 
 guessComplexityForFixedPow :: V3 -> [(Double, Double)] -> [Complexity]
-guessComplexityForFixedPow (V3 _ b initC) xys = fits
+guessComplexityForFixedPow (V3 _ b initC) xys = concat fits
   where
     -- Power of the logarithmic term is always an integer
     fits =
@@ -219,10 +220,10 @@ guessComplexityForFixedPow (V3 _ b initC) xys = fits
       where
         cmpl NE.:| cmpls = fmap (\c -> guessComplexityForFixedPowAndLog (V3 1 b c) xys) cs
 
-        go curr [] = curr
+        go curr [] = [curr]
         go curr (next : rest)
-          | wssrComplexity curr xys > wssrComplexity next xys = go next rest
-          | otherwise = curr
+          | wssrComplexity curr xys > wssrComplexity next xys = curr : go next rest
+          | otherwise = [curr]
 
 -- We want to find a which minimizes \sum_i (y_i - a f(x_i))^2 for f(x) = x^b * log^c x.
 -- Then d/da = 0 means that \sum_i (2 a f(x_i)^2 - 2 f(x_i) y_i) = 0
@@ -230,7 +231,7 @@ guessComplexityForFixedPow (V3 _ b initC) xys = fits
 guessComplexityForFixedPowAndLog :: V3 -> [(Double, Double)] -> Complexity
 guessComplexityForFixedPowAndLog (V3 _ b c) xys =
   trace'
-    ("guessComplexityForFixedPowAndLog " <> show res <> ", RSS " <> show (wssrComplexity res xys))
+    (printf "guessComplexityForFixedPowAndLog %s, RSS %.4g" (show res) (wssrComplexity res xys))
     res
   where
     eval x = evalComplexity (fromV3 (V3 1 b c)) x

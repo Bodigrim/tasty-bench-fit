@@ -59,7 +59,7 @@ mkFitConfig f (low, high) =
     , fitLow = low
     , fitHigh = high
     , fitTimeout = mkTimeout 1e8
-    , fitRelStDev = RelStDev 0.05
+    , fitRelStDev = RelStDev 0.02
     }
 
 -- | Determine time complexity of the function:
