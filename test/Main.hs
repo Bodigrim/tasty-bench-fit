@@ -20,12 +20,12 @@ main = defaultMain $ testGroup "All"
     c <- fit $ mkFitConfig (\x -> sum [1..x]) (1000, 100000)
     pure $ counterexample (show c) $ isLinear c
   , testProperty "nub is quadratic" $ ioProperty $ do
-    c <- fit $ mkFitConfig (\x -> nub [1..x]) (60000, 80000)
+    c <- fit $ mkFitConfig (\x -> nub [1..x]) (1000, 10000)
     pure $ counterexample (show c) $ isQuadratic c
-  -- , expectFail $ testProperty "sort is linearithmic" $ ioProperty $ do
-  --   c <- fit $ (mkFitConfig (\x -> Data.List.sort $ take x $
-  --     iterate (\n -> n * 6364136223846793005 + 1) (1 :: Int)) (1000, 100000)) { fitRelStDev = RelStDev 0.02 }
-  --   pure $ counterexample (show c) $ isLinearithmic c
+  , testProperty "sort is linearithmic" $ ioProperty $ do
+    c <- fit $ (mkFitConfig (\x -> Data.List.sort $ take x $
+      iterate (\n -> n * 6364136223846793005 + 1) (1 :: Int)) (10000, 100000)) { fitRelStDev = RelStDev 0.02 }
+    pure $ counterexample (show c) $ isLinearithmic c
   ]
 
 testShow :: TestTree
