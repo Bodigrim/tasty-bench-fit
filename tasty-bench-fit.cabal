@@ -46,10 +46,12 @@ library
         regression-simple >=0.2 && <0.3
 
     if flag(debug)
-        cpp-options:   -DDEBUG
-        build-depends:
-            chart-svg >=0.4 && <0.5,
-            optics-core >=0.4 && <0.5
+        cpp-options: -DDEBUG
+
+        if impl(ghc >=9.2)
+            build-depends:
+                chart-svg >=0.4 && <0.5,
+                optics-core >=0.4 && <0.5
 
 test-suite tasty-bench-fit-test
     type:             exitcode-stdio-1.0

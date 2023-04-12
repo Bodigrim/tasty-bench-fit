@@ -21,8 +21,10 @@ import Test.Tasty.Bench.Fit.Complexity
 import Test.Tasty.Bench.Fit.Samples
 
 #ifdef DEBUG
+#ifdef MIN_VERSION_chart_svg
 import Chart
 import Optics.Core
+#endif
 #endif
 
 -- | Configuration for 'fit'.
@@ -89,7 +91,6 @@ mkFitConfig f (low, high) =
 -- * If it does not work, push benchmarking interval higher, so that the main
 --   asymptotic term reveals itself more prominently, and decrease
 --   'RelStDev'. This unfortunately does affect running times significantly.
---
 fit :: FitConfig -> IO Complexity
 fit FitConfig {..} = do
   let samples = genSamples fitLow fitHigh
@@ -98,11 +99,13 @@ fit FitConfig {..} = do
       cmpl = guessComplexity pairs
 #ifdef DEBUG
   print pairs
+#ifdef MIN_VERSION_chart_svg
   let line1 = map (uncurry Point) pairs
       line2 = map (\x -> Point (fromIntegral x) (evalComplexity cmpl (fromIntegral x))) [fitLow..fitHigh]
   let styles = (\c -> defaultLineStyle & #color .~ palette1 c & #size .~ 0.002) <$> [0..1]
   let cs = zipWith (\s x -> LineChart s [x]) styles [line1, line2]
   let lineExample = mempty & #charts .~ named "line" cs & #hudOptions .~ defaultHudOptions :: ChartOptions
   writeChartOptions "tasty-bench-fit.svg" lineExample
+#endif
 #endif
   pure cmpl
