@@ -7,27 +7,31 @@ import Data.List (sort)
 import qualified Data.List.NonEmpty as NE
 
 -- | Generate exponentially-distributed samples from a given interval.
--- The idea is that branchmarking a function
+-- The idea is that benchmarking a function
 -- on these samples should provide suitable amount of data
 -- to determine asymptotic time complexity.
 --
 -- >>> genSamples 10 1000
--- [10,15,20,31,40,62,80,125,160,250,320,500,640,1000]
+-- [10,16,25,40,63,100,158,251,398,631,1000]
 genSamples :: Int -> Int -> [Int]
-genSamples low high =
-  map NE.head $
-    NE.group $
-      sort $
-        doubleUp low high <> halfDown low high
+genSamples low high
+  | low' > high' = []
+  | low' == high' = [low]
+  | otherwise = nubOrd $ map mkSample [0 .. count]
+  where
+    d :: Int -> Double
+    d = fromIntegral
 
-doubleUp :: Int -> Int -> [Int]
-doubleUp low high =
-  takeWhile (< min (maxBound `quot` 2) high) $
-    iterate (* 2) $
-      max 1 low
+    low' = d $ max 1 low
+    high' = d $ max 1 high
+    count = round (logBase 2 (high' - low'))
 
-halfDown :: Int -> Int -> [Int]
-halfDown low high =
-  takeWhile (> max 0 low) $
-    iterate (`quot` 2) $
-      max 0 high
+    mkSample :: Int -> Int
+    mkSample c =
+      round $
+        max low' $
+          min high' $
+            low' ** (d (count - c) / d count) * high' ** (d c / d count)
+
+nubOrd :: (Ord a) => [a] -> [a]
+nubOrd = map NE.head . NE.group . sort
