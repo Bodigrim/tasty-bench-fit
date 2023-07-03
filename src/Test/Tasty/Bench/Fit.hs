@@ -135,6 +135,13 @@ converge xs = case zs of
 --
 -- If 'fit' takes too long, you might wish to implement your own criterion
 -- of convergence atop of 'fits' directly.
+--
+-- >>> cmpls <- fits $ mkFitConfig (\x -> sum [1..x]) (10, 10000)
+-- >>> traverse print cmpls
+-- 3.36e-8 * x ^ 0.903
+-- 1.39e-8 * x
+-- 1.38e-8 * x
+-- ...
 fits :: FitConfig -> IO (NonEmpty Complexity)
 fits FitConfig {..} = unsafeInterleaveIO $ do
   lowTime <- measure fitLow
