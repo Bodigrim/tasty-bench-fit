@@ -53,7 +53,7 @@ import Test.Tasty.Bench.Fit.Complexity (
 import Debug.Trace
 #endif
 
--- | Configuration for 'fit'.
+-- | Configuration for 'fit' / 'fits'.
 data FitConfig = FitConfig
   { fitBench :: Word -> Benchmarkable
   -- ^ Which function to measure? Typically 'nf' @f@.
@@ -74,7 +74,7 @@ data FitConfig = FitConfig
   -- Typically 'guessComplexity'.
   }
 
--- | Generate a default 'fit' configuration.
+-- | Generate a default 'fit' / 'fits' configuration.
 mkFitConfig
   :: (NFData a)
   => (Word -> a)
@@ -111,6 +111,11 @@ mkFitConfig f (low, high) =
 -- Consider running such measurements with @-O0@ or in @ghci@ prompt. This is how
 -- the usage example above was generated. Without optimizations your program
 -- allocates much more and triggers GC regularly, somewhat evening out its effect.
+--
+-- While suitable for automatic estimates, 'fit' generally provides bad user
+-- experience in interactive environments, because it can take a very long time
+-- before it returns a result without any heartbeat in between. Consider using
+-- 'fits' or enabling @debug@ flag.
 fit :: FitConfig -> IO Complexity
 fit cnf = converge <$> fits cnf
 
@@ -122,7 +127,7 @@ converge xs = case zs of
     ys = NE.toList xs
     zs =
       dropWhile (\(x, y, z) -> p x z || p y z) $
-        zip3 ys (tail ys) (drop 2 ys)
+        zip3 ys (drop 1 ys) (drop 2 ys)
     p
       Complexity {cmplVarPower = varPow, cmplLogPower = logPow, cmplMultiplier = mult}
       Complexity {cmplVarPower = varPow', cmplLogPower = logPow', cmplMultiplier = mult'} =
@@ -135,6 +140,13 @@ converge xs = case zs of
 --
 -- If 'fit' takes too long, you might wish to implement your own criterion
 -- of convergence atop of 'fits' directly.
+--
+-- >>> cmpls <- fits $ mkFitConfig (\x -> sum [1..x]) (10, 10000)
+-- >>> traverse print cmpls
+-- 3.36e-8 * x ^ 0.903
+-- 1.39e-8 * x
+-- 1.38e-8 * x
+-- ...
 fits :: FitConfig -> IO (NonEmpty Complexity)
 fits FitConfig {..} = unsafeInterleaveIO $ do
   lowTime <- measure fitLow

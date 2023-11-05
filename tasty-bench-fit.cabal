@@ -6,8 +6,8 @@ license-file:    LICENSE
 maintainer:      andrew.lelechenko@gmail.com
 author:          Bodigrim
 tested-with:
-    ghc ==9.6.1 ghc ==9.4.4 ghc ==9.2.7 ghc ==9.0.2 ghc ==8.10.7
-    ghc ==8.8.4 ghc ==8.6.5 ghc ==8.4.4
+    ghc ==9.10.1 ghc ==9.8.2 ghc ==9.6.5 ghc ==9.4.8 ghc ==9.2.8
+    ghc ==9.0.2 ghc ==8.10.7 ghc ==8.8.4 ghc ==8.6.5 ghc ==8.4.4
 
 homepage:        https://github.com/Bodigrim/tasty-bench-fit
 synopsis:        Determine time complexity of a given function
@@ -38,10 +38,10 @@ library
     ghc-options:      -Wall
     build-depends:
         base >=4.11 && <5,
-        containers >=0.5.11 && <0.7,
-        deepseq >=1.4 && <1.5,
+        containers >=0.5.11 && <0.8,
+        deepseq >=1.4 && <1.6,
         infinite-list >=0.1 && <0.2,
-        tasty >=1.4 && <1.5,
+        tasty >=1.4 && <1.6,
         tasty-bench >=0.3.4 && <0.4,
         regression-simple >=0.2.1 && <0.3
 
@@ -55,9 +55,9 @@ test-suite tasty-bench-fit-test
     default-language: Haskell2010
     build-depends:
         base,
-        containers <0.7,
+        containers,
         tasty,
         tasty-bench,
         tasty-bench-fit,
-        tasty-quickcheck <0.11,
+        tasty-quickcheck <0.12,
         tasty-expected-failure <0.13
