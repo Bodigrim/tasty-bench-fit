@@ -8,7 +8,6 @@
 -- | Guess complexity from data.
 module Test.Tasty.Bench.Fit.Complexity (
   Complexity (..),
-  Measurement (..),
   guessComplexity,
   evalComplexity,
 
@@ -36,6 +35,7 @@ import Math.Regression.Simple (
   levenbergMarquardt2WithYerrors,
   linear,
  )
+import Test.Tasty.Bench.Utils (Measurement (..))
 import Text.Printf (printf)
 import Prelude hiding (log)
 import qualified Prelude as P
@@ -141,18 +141,6 @@ bestOf = fst . minimumBy (comparing weigh)
             if diff < 0.05
               then 100
               else (if diff < 0.15 then 32 else 10)
-
--- | Represents a time measurement for a given problem's size.
-data Measurement = Measurement
-  { measTime :: !Double
-  , measStDev :: !Double
-  }
-  deriving (Eq, Ord, Generic)
-
-instance Show Measurement where
-  show (Measurement t err) = printf "%.3g ± %.3g" t err
-
-instance NFData Measurement
 
 -- | Guess time complexity from a map where keys
 -- are problem's sizes and values are time measurements (or instruction counts).

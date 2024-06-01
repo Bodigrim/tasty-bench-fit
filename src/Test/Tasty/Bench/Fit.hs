@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE NumDecimals #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -35,10 +34,9 @@ import qualified Data.Map as M
 import Data.Ord (comparing)
 import System.IO.Unsafe (unsafeInterleaveIO)
 import Test.Tasty (Timeout, mkTimeout)
-import Test.Tasty.Bench (Benchmarkable, RelStDev (..), measureCpuTimeAndStDev, nf)
+import Test.Tasty.Bench (Benchmarkable, RelStDev (..), nf)
 import Test.Tasty.Bench.Fit.Complexity (
   Complexity (..),
-  Measurement (..),
   evalComplexity,
   guessComplexity,
   isConstant,
@@ -48,10 +46,7 @@ import Test.Tasty.Bench.Fit.Complexity (
   isLogarithmic,
   isQuadratic,
  )
-
-#ifdef DEBUG
-import Debug.Trace
-#endif
+import Test.Tasty.Bench.Utils (Measurement (..), measure, traceShowM')
 
 -- | Configuration for 'fit' / 'fits'.
 data FitConfig = FitConfig
@@ -149,17 +144,14 @@ converge xs = case zs of
 -- ...
 fits :: FitConfig -> IO (NonEmpty Complexity)
 fits FitConfig {..} = unsafeInterleaveIO $ do
-  lowTime <- measure fitLow
-  highTime <- measure fitHigh
+  lowTime <- measureIt fitLow
+  highTime <- measureIt fitHigh
   let mp = M.fromList [(fitLow, lowTime), (fitHigh, highTime)]
       cmpl = fitOracle mp
   cmpl `seq` (cmpl :|) <$> go mp
   where
-    measure :: Word -> IO Measurement
-    measure =
-      fmap (uncurry Measurement)
-        . measureCpuTimeAndStDev fitTimeout fitRelStDev
-        . fitBench
+    measureIt :: Word -> IO Measurement
+    measureIt = measure fitTimeout fitRelStDev . fitBench
 
     processGap
       :: forall t
@@ -169,7 +161,7 @@ fits FitConfig {..} = unsafeInterleaveIO $ do
       -> IO (Map Word Measurement)
     processGap gaps mp
       | M.null gaps' = pure mp
-      | otherwise = (\m -> M.insert maxGap m mp) <$> measure maxGap
+      | otherwise = (\m -> M.insert maxGap m mp) <$> measureIt maxGap
       where
         gaps' = M.fromList gaps `M.difference` mp
         maxGap = fst $ maximumBy (comparing snd) $ M.toList gaps'
@@ -200,10 +192,3 @@ fits FitConfig {..} = unsafeInterleaveIO $ do
 
 d :: Word -> Double
 d = fromIntegral
-
-traceShowM' :: (Applicative m, Show a) => a -> m ()
-#ifdef DEBUG
-traceShowM' = traceShowM
-#else
-traceShowM' = const (pure ())
-#endif
