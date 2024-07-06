@@ -9,6 +9,7 @@
 module Test.Tasty.Bench.Fit.Complexity (
   Complexity (..),
   guessComplexity,
+  guessPolynomialComplexity,
   evalComplexity,
 
   -- * Predicates
@@ -178,6 +179,19 @@ guessComplexity xys =
           c1 : c2 : takeUntilLocalMin ((c3, c4) :< cs)
       | otherwise =
           [c1, c2]
+
+-- | Same as guessComplexity, but the power of \( \log x \) ('cmplLogPower')
+-- is pinned to be 0.
+--
+-- @since 0.1.1
+guessPolynomialComplexity :: Map Word Measurement -> Complexity
+guessPolynomialComplexity xys =
+  trace'
+    ("guessPolynomialComplexity " ++ show (M.assocs xys))
+    bestOf
+    [cmpl1, cmpl2]
+  where
+    (cmpl1, cmpl2) = guessComplexityForFixedLog xys 0
 
 guessComplexityForFixedLog
   :: Map Word Measurement

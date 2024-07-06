@@ -1,6 +1,8 @@
+{-# HLINT ignore "Avoid restricted function" #-}
 {-# LANGUAGE NumDecimals #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 -- | Guess complexity of the function.
 module Test.Tasty.Bench.Fit (
@@ -14,6 +16,7 @@ module Test.Tasty.Bench.Fit (
   Complexity (..),
   Measurement (..),
   guessComplexity,
+  guessPolynomialComplexity,
   evalComplexity,
 
   -- * Predicates
@@ -39,6 +42,7 @@ import Test.Tasty.Bench.Fit.Complexity (
   Complexity (..),
   evalComplexity,
   guessComplexity,
+  guessPolynomialComplexity,
   isConstant,
   isCubic,
   isLinear,
