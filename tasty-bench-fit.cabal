@@ -44,7 +44,7 @@ library
     ghc-options:      -Wall
     build-depends:
         base >=4.11 && <5,
-        containers >=0.5.11 && <0.8,
+        containers >=0.5.11 && <0.9,
         deepseq >=1.4 && <1.6,
         infinite-list >=0.1 && <0.2,
         tasty >=1.4 && <1.6,
