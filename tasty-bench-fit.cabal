@@ -48,7 +48,7 @@ library
         deepseq >=1.4 && <1.6,
         infinite-list >=0.1 && <0.2,
         tasty >=1.4 && <1.6,
-        tasty-bench >=0.4 && <0.5,
+        tasty-bench >=0.4 && <0.6,
         regression-simple >=0.2.1 && <0.3
 
     if flag(debug)
