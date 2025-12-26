@@ -6,7 +6,7 @@ license-file:    LICENSE
 maintainer:      andrew.lelechenko@gmail.com
 author:          Bodigrim
 tested-with:
-    ghc ==9.10.1 ghc ==9.8.2 ghc ==9.6.5 ghc ==9.4.8 ghc ==9.2.8
+    ghc ==9.10.3 ghc ==9.8.4 ghc ==9.6.5 ghc ==9.4.8 ghc ==9.2.8
     ghc ==9.0.2 ghc ==8.10.7 ghc ==8.8.4 ghc ==8.6.5 ghc ==8.4.4
 
 homepage:        https://github.com/Bodigrim/tasty-bench-fit
